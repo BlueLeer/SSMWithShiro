@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:aop="http://www.springframework.org/schema/aop" xmlns:jee="http://www.springframework.org/schema/jee"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xsi:schemaLocation="
+			http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+			http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+			http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee.xsd
+			http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd
+			http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd">
+
+    <!--自定义UserRealm-->
+    <bean id="myRealm" class="com.lee.shirospring.realm.UserRealm">
+        <!--注入凭证匹配器-->
+        <property name="credentialsMatcher" ref="credentialsMatcher"/>
+    </bean>
+    <!--配置安全管理器 SecurityManager-->
+    <bean id="securityManager" class="org.apache.shiro.web.mgt.DefaultWebSecurityManager">
+        <property name="realm" ref="myRealm"/>
+        <property name="cacheManager" ref="cacheManager"/>
+    </bean>
+
+    <!--shiroFilter,id值需要保证和web.xml中配置的一样-->
+    <bean id="shiroFilter" class="org.apache.shiro.spring.web.ShiroFilterFactoryBean">
+        <!--Shiro的核心安全接口,这个属性是必须的-->
+        <property name="securityManager" ref="securityManager"/>
+        <!--身份认证失败,跳转的页面-->
+        <property name="loginUrl" value="/login"/>
+        <!--权限认证失败,跳转到指定的页面-->
+        <property name="unauthorizedUrl" value="/nopermission.jsp"/>
+        <!--Shiro连接约束配置,即过滤链的配置-->
+        <property name="filterChainDefinitions">
+            <value>
+                /**=authc
+                /logout=logout
+            </value>
+        </property>
+    </bean>
+
+    <!--========================================================================-->
+
+    <!--缓存管理器-->
+    <bean id="cacheManager" class="org.apache.shiro.cache.ehcache.EhCacheManager">
+        <property name="cacheManager" ref="ehCacheManager"/>
+    </bean>
+
+    <!--配置这个bean的时候,务必保证spring-context-support模块已经导入-->
+    <bean id="ehCacheManager" class="org.springframework.cache.ehcache.EhCacheManagerFactoryBean">
+        <property name="configLocation" value="classpath:shiro/shiro-ehcache.xml"/>
+        <property name="shared" value="true"/>
+    </bean>
+
+    <!--还需要将cacheManager注入到securityManager中去-->
+
+
+    <!--========================================================================-->
+    <!--配置凭证匹配器(密码加密器)-->
+    <bean id="credentialsMatcher" class="org.apache.shiro.authc.credential.HashedCredentialsMatcher">
+        <!--加密方式-->
+        <property name="hashAlgorithmName" value="md5"/>
+        <!--散列次数-->
+        <property name="hashIterations" value="2"/>
+    </bean>
+    <!--然后将credentialsMatcher注入到myRealm中-->
+    <!--然后在认证时构建的AuthenticationInfo的时候,可以指定"盐",-->
+
+</beans>

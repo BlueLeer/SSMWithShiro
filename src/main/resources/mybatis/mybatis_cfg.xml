@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+
+    <settings>
+        <setting name="logImpl" value="LOG4J"/>
+        <!--
+        配置懒加载:
+        lazyLoadingEnabled:
+            表示是否开启懒加载,true表示开启懒加载,默认为true
+        aggressiveLazyLoading:
+            当它为true的时候,访问任何一个属性,都会触发查询,懒加载的对象也会被查询
+            当它为false的时候,你访问了非懒加载对象,他不会执行懒加载语句;直到你访问了懒加载对象,他才会进行加载
+            默认值为true
+        lazyLoadTriggerMethods:
+            指定哪些对象的方法会触发一次延迟加载.默认有: equals,clone,hashCode,toString
+            当执行这些方法的时候,都会触发懒加载
+        -->
+        <setting name="lazyLoadingEnabled" value="true"/>
+        <setting name="aggressiveLazyLoading" value="false"/>
+        <!--将触发懒加载的方法设成空-->
+        <setting name="lazyLoadTriggerMethods" value="/"/>
+
+        <!--开启二级缓存,默认就是true,可以不配置-->
+        <setting name="cacheEnabled" value="true"/>
+
+    </settings>
+
+    <!--批量设置别名,就可以直接使用类名就可以了,不用使用全限定类名了-->
+    <typeAliases>
+        <package name="com.lee.shirospring.domain"/>
+    </typeAliases>
+
+    <!--在Spring中开启组件扫描,所以这里不用配置了
+    注意:在Spring中自动扫描Mapper.xml和Mapper.java必须要满足文件名一致,并且在同一个目录下-->
+    <!--<mappers></mappers>-->
+
+</configuration>
